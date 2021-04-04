@@ -21,16 +21,24 @@ const scene = new THREE.Scene()
 const geometry = new THREE.PlaneBufferGeometry(1, 1.3)
 
 
-for (let i = 0; i < 4; i++) {
+for (let i = 1; i < 5; i++) {
     const material = new THREE.MeshBasicMaterial({
         map: textureLoader.load(`/textures/p0${i}.png`)
     })
 
     const img = new THREE.Mesh(geometry, material)
-    img.position.set(Math.random() + .3, i * 1.2)
+    img.position.set(Math.random() + .3, i * -1.8)
     scene.add(img)
-
 }
+
+let objs = []
+
+scene.traverse((object) => {
+    if (object.isMesh) {
+        objs.push(object)
+    }
+})
+
 
 
 // Lights
@@ -97,14 +105,24 @@ let y = 0
 let position = 0
 
 function onMouseWheel(event) {
-    y = event.deltaY * 0.0007
+    y = event.deltaY * 0.001
 
 }
+const mouse = new THREE.Vector2()
 
+window.addEventListener('mousemove', (event) => {
+    // console.log(event.clientX * 2 - 1 ) ;
+
+    mouse.x = event.clientX / sizes.width * 2 - 1
+    mouse.y = (event.clientY / sizes.height) * 2 - 1
+
+})
 
 /**
  * Animate
  */
+
+const raycaster = new THREE.Raycaster()
 
 const clock = new THREE.Clock()
 
@@ -115,7 +133,13 @@ const tick = () => {
     // Update objects
     position += y
     y *= .9
-    camera.position.y = postion
+
+    //Raycaster update
+
+    raycaster.setFromCamera(mouse, camera)
+
+
+    camera.position.y = position
     // Update Orbital Controls
     // controls.update()
 
