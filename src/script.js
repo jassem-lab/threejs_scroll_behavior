@@ -5,7 +5,7 @@ import * as dat from 'dat.gui'
 
 
 // Texture Loader 
-const textureLoader = new.THREE.TextureLoader()
+const textureLoader = new THREE.TextureLoader()
 
 
 // Debug
@@ -18,9 +18,19 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
-// Object
+const geometry = new THREE.PlaneBufferGeometry(1, 1.3)
 
 
+for (let i = 0; i < 4; i++) {
+    const material = new THREE.MeshBasicMaterial({
+        map: textureLoader.load(`/textures/p0${i}.png`)
+    })
+
+    const img = new THREE.Mesh(geometry, material)
+    img.position.set(Math.random() + .3, i * 1.2)
+    scene.add(img)
+
+}
 
 
 // Lights
@@ -63,6 +73,9 @@ camera.position.y = 0
 camera.position.z = 2
 scene.add(camera)
 
+
+gui.add(camera.position, 'y').min(-5).max(10)
+
 // Controls
 // const controls = new OrbitControls(camera, canvas)
 // controls.enableDamping = true
@@ -76,6 +89,19 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
+// Mouse
+
+window.addEventListener("wheel", onMouseWheel)
+
+let y = 0
+let position = 0
+
+function onMouseWheel(event) {
+    y = event.deltaY * 0.0007
+
+}
+
+
 /**
  * Animate
  */
@@ -87,8 +113,9 @@ const tick = () => {
     const elapsedTime = clock.getElapsedTime()
 
     // Update objects
-    sphere.rotation.y = .5 * elapsedTime
-
+    position += y
+    y *= .9
+    camera.position.y = postion
     // Update Orbital Controls
     // controls.update()
 
