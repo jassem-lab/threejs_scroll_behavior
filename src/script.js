@@ -2,7 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
-
+import gsap from 'gsap'
 
 // Texture Loader 
 const textureLoader = new THREE.TextureLoader()
@@ -104,6 +104,8 @@ window.addEventListener("wheel", onMouseWheel)
 let y = 0
 let position = 0
 
+camera.position.y = -position
+
 function onMouseWheel(event) {
     y = event.deltaY * 0.001
 
@@ -114,7 +116,7 @@ window.addEventListener('mousemove', (event) => {
     // console.log(event.clientX * 2 - 1 ) ;
 
     mouse.x = event.clientX / sizes.width * 2 - 1
-    mouse.y = (event.clientY / sizes.height) * 2 - 1
+    mouse.y = - (event.clientY / sizes.height) * 2 + 1
 
 })
 
@@ -137,6 +139,20 @@ const tick = () => {
     //Raycaster update
 
     raycaster.setFromCamera(mouse, camera)
+    const intersects = raycaster.intersectObjects(objs)
+    for (const intersect of intersects) {
+        gsap.to(intersect.object.scale, { x: 1.7, y: 1.7 })
+        gsap.to(intersect.object.rotation, { y: -.5 })
+
+    }
+    for (const object of objs) {
+        if (!intersects.find(intersect => intersect.object === object)) {
+            gsap.to(object.scale, { x: 1, y: 1 })
+            gsap.to(object.rotation, { y: 0 })
+            gsap.to(object.position, { z: 0 })
+
+        }
+    }
 
 
     camera.position.y = position
